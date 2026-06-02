@@ -7,8 +7,8 @@ public class Pacientes {
                "id SERIAL PRIMARY KEY, "+
                "pac_nome VARCHAR(80) NOT NULL, "+ //muda
                "pac_sobrenome VARCHAR(80) NOT NULL, "+  //muda
-               "pac_login VARCHAR(20) NOT NULL, "+ //muda
-               "pac_senha VARCHAR(20) NOT NULL,"+ //muda
+               "pac_login VARCHAR(80) NOT NULL, "+ //muda
+               "pac_senha VARCHAR(150) NOT NULL,"+ //muda
                "pac_nasc INTEGER NOT NULL,"+ //muda
                "pac_codigo INTEGER NOT NULL,"+
                "pac_receita TEXT NOT NULL"+
