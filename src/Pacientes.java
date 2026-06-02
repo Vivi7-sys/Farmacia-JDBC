@@ -9,7 +9,7 @@ public class Pacientes {
                "pac_sobrenome VARCHAR(80) NOT NULL, "+  //muda
                "pac_login VARCHAR(80) NOT NULL, "+ //muda
                "pac_senha VARCHAR(150) NOT NULL,"+ //muda
-               "pac_nasc INTEGER NOT NULL,"+ //muda
+               "pac_nasc INTEGER NOT NULL CHECK (pac_nasc BETWEEN 1800 AND 3026),"+ //muda
                "pac_codigo INTEGER NOT NULL,"+
                "pac_receita TEXT NOT NULL"+
                ")"//muda
@@ -128,7 +128,7 @@ public class Pacientes {
            int linhasAfetadas = ps.executeUpdate();
 
            if (linhasAfetadas == 0) {
-               System.out.println("Produto não encontrado.");
+               System.out.println("Paciente não encontrado.");
                ps.close();
                break;
            }
@@ -188,7 +188,6 @@ public class Pacientes {
             Connection conn = DriverManager.getConnection(url, "postgres", "666");
             System.out.println("Conexão com sucesso.");
 
-            // Cria a tabela produto
             createTable(conn);
 
             Scanner in = new Scanner(System.in);
