@@ -5,13 +5,13 @@ public class Pacientes {
    public static void createTable(Connection conn) throws SQLException{
        String sql = "CREATE TABLE IF NOT EXISTS pacientes (" +
                "id SERIAL PRIMARY KEY, "+
-               "pacNome VARCHAR(80) NOT NULL, "+ //muda
-               "pacSobrenome VARCHAR(80) NOT NULL, "+  //muda
-               "pacLogin VARCHAR(20) NOT NULL, "+ //muda
-               "pacSenha VARCHAR(20) NOT NULL,"+ //muda
-               "pacNasc INTEGER NOT NULL,"+ //muda
-               "pacCodigo INTEGER NOT NULL,"+
-               "pacReceita TEXT NOT NULL"+
+               "pac_nome VARCHAR(80) NOT NULL, "+ //muda
+               "pac_sobrenome VARCHAR(80) NOT NULL, "+  //muda
+               "pac_login VARCHAR(20) NOT NULL, "+ //muda
+               "pac_senha VARCHAR(20) NOT NULL,"+ //muda
+               "pac_nasc INTEGER NOT NULL,"+ //muda
+               "pac_codigo INTEGER NOT NULL,"+
+               "pac_receita TEXT NOT NULL"+
                ")"//muda
                ;
 
@@ -36,8 +36,8 @@ public class Pacientes {
        System.out.println("Informe a receita do paciente: ");
        String receita = in.next();
 
-       String sql = "INSERT INTO pacientes (pacNome, pacSobrenome, pacLogin, "+
-               "pacSenha, pacNasc, pacCodigo, pacReceita)"+
+       String sql = "INSERT INTO pacientes (pac_nome, pac_sobrenome, pac_login, "+
+               "pac_senha, pac_nasc, pac_codigo, pac_receita)"+
                "values (?, ?, ?, ?, ?,?,?)";
 
        PreparedStatement ps = conn.prepareStatement(sql);
@@ -55,19 +55,19 @@ public class Pacientes {
    }
 
    public static void read(Connection conn) throws SQLException{
-       String sql = "SELECT * FROM pacientes ORDER BY pacNome";
+       String sql = "SELECT * FROM pacientes ORDER BY pac_nome";
        Statement stmt = conn.createStatement();
        ResultSet rs = stmt.executeQuery(sql);
 
        while (rs.next()){
            int id = rs.getInt("id");
-           String nome = rs.getString("pacNome");
-           String sobNome = rs.getString("pacSobrenome");
-           String login = rs.getString("pacLogin");
-           String senha = rs.getString("pacSenha");
-           int nasc = rs.getInt("pacNasc");
-           int codigo = rs.getInt("pacCodigo");
-           String receita = rs.getString("pacReceita");
+           String nome = rs.getString("pac_nome");
+           String sobNome = rs.getString("pac_sobrenome");
+           String login = rs.getString("pac_login");
+           String senha = rs.getString("pac_senha");
+           int nasc = rs.getInt("pac_nasc");
+           int codigo = rs.getInt("pac_codigo");
+           String receita = rs.getString("pac_receita");
 
            System.out.printf(
                    "[%d] %s %s | Login: %s | Senha: %s | Nasc: %d | Código: %d | Receita: %s%n",
@@ -82,12 +82,12 @@ public class Pacientes {
        String[] campos = new String[6];
        boolean[] isInt = new boolean[6];
 
-       sql[0] = "UPDATE pacientes SET pacNome = ? WHERE id = ?";
-       sql[1] = "UPDATE pacientes SET pacSobrenome = ? WHERE id = ?";
-       sql[2] = "UPDATE pacientes SET pacLogin = ? WHERE id = ?";
-       sql[3] = "UPDATE pacientes SET pacSenha = ? WHERE id = ?";
-       sql[4] = "UPDATE pacientes SET pacNasc = ? WHERE id = ?";
-       sql[5] = "UPDATE pacientes SET pacReceita = ? WHERE id = ?";
+       sql[0] = "UPDATE pacientes SET pac_nome = ? WHERE id = ?";
+       sql[1] = "UPDATE pacientes SET pac_sobrenome = ? WHERE id = ?";
+       sql[2] = "UPDATE pacientes SET pac_login = ? WHERE id = ?";
+       sql[3] = "UPDATE pacientes SET pac_senha = ? WHERE id = ?";
+       sql[4] = "UPDATE pacientes SET pac_nasc = ? WHERE id = ?";
+       sql[5] = "UPDATE pacientes SET pac_receita = ? WHERE id = ?";
 
        campos[0] = "Nome";
        campos[1] = "Sobrenome";
@@ -103,7 +103,7 @@ public class Pacientes {
        isInt[4] = true;
        isInt[5] = false;
 
-       System.out.print("Informe o ID do produto a ser atualizado: ");
+       System.out.print("Informe o ID do paciente a ser atualizado: ");
        int id = in.nextInt();
 
        for (int i = 0; i < sql.length; i++) {
