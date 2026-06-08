@@ -3,16 +3,16 @@ import java.util.Scanner;
 
 public class Armazenamento {
     public static void createTable(Connection conn) throws SQLException {
+        // Ajustado: Adicionadas as vírgulas que faltavam ao final das linhas de qrcode e criador
         String sql = "CREATE TABLE IF NOT EXISTS armazenamento (" +
                 "id SERIAL PRIMARY KEY, "+
-                "arm_validade VARCHAR(20) NOT NULL, "+ //muda
-                "arm_lote INTEGER NOT NULL CHECK (arm_lote BETWEEN 1800 AND 3026)"+  //muda
-                "pac_login VARCHAR(80) NOT NULL, "+ //muda
-                "pac_senha VARCHAR(150) NOT NULL,"+ //muda
-                "pac_nasc INTEGER NOT NULL CHECK (pac_nasc BETWEEN 1800 AND 3026),"+ //muda
-                "pac_codigo INTEGER NOT NULL,"+
-                "pac_receita TEXT NOT NULL"+
-                ")"//muda
+                "rem_nome VARCHAR(20) NOT NULL, "+
+                "rem_id INTEGER NOT NULL, "+
+                "rem_validade INTEGER NOT NULL CHECK (rem_validade BETWEEN 1800 AND 3026), "+
+                "rem_lote VARCHAR(20) NOT NULL,"+
+                "rem_qrcode TEXT NOT NULL, "+
+                "criador VARCHAR(80) NOT NULL, "+
+                "doador VARCHAR(80) NOT NULL)"
                 ;
 
         Statement stmt = conn.createStatement();
@@ -20,94 +20,96 @@ public class Armazenamento {
         stmt.close(); // fecha instrução
     }
 
-    public static void create(Connection conn, Scanner in) throws SQLException{
-        System.out.println("Informe o nome do paciente: ");
+    public static void create(Connection conn, Scanner in) throws SQLException {
+        System.out.println("Informe o nome do remédio: ");
         String nome = in.next();
-        System.out.println("Informe o sobrenome do paciente: ");
-        String sobNome = in.next();
-        System.out.println("Informe o login do paciente: ");
-        String login = in.next();
-        System.out.println("Informe a senha do paciente: ");
-        String senha = in.next();
-        System.out.println("Informe a nasc do paciente: ");
-        int nasc = in.nextInt();
-        System.out.println("Informe o código do paciente: ");
-        int codigo = in.nextInt();
-        System.out.println("Informe a receita do paciente: ");
-        String receita = in.next();
+        System.out.println("Informe o ID do remédio: ");
+        int remId = in.nextInt();
+        System.out.println("Informe a validade do remédio (Ano): ");
+        int validade = in.nextInt();
+        System.out.println("Informe o lote do remédio: ");
+        String lote = in.next();
+        System.out.println("Informe o QR Code do remédio: ");
+        String qrCode = in.next();
+        System.out.println("Informe o criador: ");
+        String criador = in.next();
+        System.out.println("Informe o doador: ");
+        String doador = in.next();
 
-        String sql = "INSERT INTO armazenamento (pac_nome, pac_sobrenome, pac_login, "+
-                "pac_senha, pac_nasc, pac_codigo, pac_receita)"+
-                "values (?, ?, ?, ?, ?,?,?)";
+        String sql = "INSERT INTO armazenamento (rem_nome, rem_id, rem_validade, "+
+                "rem_lote, rem_qrcode, criador, doador) "+
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, nome);
-        ps.setString(2, sobNome);
-        ps.setString(3, login);
-        ps.setString(4, senha);
-        ps.setInt(5, nasc);
-        ps.setInt(6, codigo);
-        ps.setString(7, receita);
+        ps.setInt(2, remId);
+        ps.setInt(3, validade);
+        ps.setString(4, lote);
+        ps.setString(5, qrCode);
+        ps.setString(6, criador);
+        ps.setString(7, doador);
         ps.executeUpdate();
         ps.close();
-
-
     }
 
-    public static void read(Connection conn) throws SQLException{
-        String sql = "SELECT * FROM armazenamento ORDER BY pac_nome";
+    public static void read(Connection conn) throws SQLException {
+        String sql = "SELECT * FROM armazenamento ORDER BY rem_nome";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql);
 
-        while (rs.next()){
+        while (rs.next()) {
             int id = rs.getInt("id");
-            String nome = rs.getString("pac_nome");
-            String sobNome = rs.getString("pac_sobrenome");
-            String login = rs.getString("pac_login");
-            String senha = rs.getString("pac_senha");
-            int nasc = rs.getInt("pac_nasc");
-            int codigo = rs.getInt("pac_codigo");
-            String receita = rs.getString("pac_receita");
+            String nome = rs.getString("rem_nome");
+            int remId = rs.getInt("rem_id");
+            int validade = rs.getInt("rem_validade");
+            String lote = rs.getString("rem_lote");
+            String qrCode = rs.getString("rem_qrcode");
+            String criador = rs.getString("criador");
+            String doador = rs.getString("doador");
 
             System.out.printf(
-                    "[%d] %s %s | Login: %s | Senha: %s | Nasc: %d | Código: %d | Receita: %s%n",
-                    id, nome, sobNome, login, senha, nasc, codigo, receita
+                    "[%d] %s (ID: %d) | Validade: %d | Lote: %s | QR: %s | Criador: %s | Doador: %s%n",
+                    id, nome, remId, validade, lote, qrCode, criador, doador
             );
         }
-
+        rs.close();
+        stmt.close();
     }
 
-    public static void update(Connection conn, Scanner in) throws SQLException{
-        String[] sql = new String[6];
-        String[] campos = new String[6];
-        boolean[] isInt = new boolean[6];
+    public static void update(Connection conn, Scanner in) throws SQLException {
+        // São 7 campos editáveis no total
+        String[] sql = new String[7];
+        String[] campos = new String[7];
+        boolean[] isInt = new boolean[7];
 
-        sql[0] = "UPDATE armazenamento SET pac_nome = ? WHERE id = ?";
-        sql[1] = "UPDATE armazenamento SET pac_sobrenome = ? WHERE id = ?";
-        sql[2] = "UPDATE armazenamento SET pac_login = ? WHERE id = ?";
-        sql[3] = "UPDATE armazenamento SET pac_senha = ? WHERE id = ?";
-        sql[4] = "UPDATE armazenamento SET pac_nasc = ? WHERE id = ?";
-        sql[5] = "UPDATE armazenamento SET pac_receita = ? WHERE id = ?";
+        sql[0] = "UPDATE armazenamento SET rem_nome = ? WHERE id = ?";
+        sql[1] = "UPDATE armazenamento SET rem_id = ? WHERE id = ?";
+        sql[2] = "UPDATE armazenamento SET rem_validade = ? WHERE id = ?";
+        sql[3] = "UPDATE armazenamento SET rem_lote = ? WHERE id = ?";
+        sql[4] = "UPDATE armazenamento SET rem_qrcode = ? WHERE id = ?";
+        sql[5] = "UPDATE armazenamento SET criador = ? WHERE id = ?";
+        sql[6] = "UPDATE armazenamento SET doador = ? WHERE id = ?";
 
-        campos[0] = "Nome";
-        campos[1] = "Sobrenome";
-        campos[2] = "Login";
-        campos[3] = "Senha";
-        campos[4] = "Nasc";
-        campos[5] = "Receita";
+        campos[0] = "Nome do Remédio";
+        campos[1] = "ID do Remédio";
+        campos[2] = "Validade";
+        campos[3] = "Lote";
+        campos[4] = "QR Code";
+        campos[5] = "Criador";
+        campos[6] = "Doador";
 
         isInt[0] = false;
-        isInt[1] = false;
-        isInt[2] = false;
+        isInt[1] = true;  // rem_id é int
+        isInt[2] = true;  // rem_validade é int
         isInt[3] = false;
-        isInt[4] = true;
+        isInt[4] = false;
         isInt[5] = false;
+        isInt[6] = false;
 
-        System.out.print("Informe o ID do paciente a ser atualizado: ");
+        System.out.print("Informe o ID do registro de armazenamento a ser atualizado: ");
         int id = in.nextInt();
 
         for (int i = 0; i < sql.length; i++) {
-
             PreparedStatement ps = conn.prepareStatement(sql[i]);
 
             int novoInt = 0;
@@ -128,21 +130,20 @@ public class Armazenamento {
             int linhasAfetadas = ps.executeUpdate();
 
             if (linhasAfetadas == 0) {
-                System.out.println("Paciente não encontrado.");
+                System.out.println("Registro de armazenamento não encontrado.");
                 ps.close();
                 break;
             }
 
             System.out.println("Campo " + campos[i] + " alterado com sucesso!");
-
             ps.close();
         }
     }
 
-    public static void delete(Connection conn, Scanner in) throws SQLException{
+    public static void delete(Connection conn, Scanner in) throws SQLException {
         String sql = "DELETE FROM armazenamento WHERE id = ?";
 
-        System.out.print("Informe o ID do paciente a ser deletado: ");
+        System.out.print("Informe o ID do registro a ser deletado: ");
         int id = in.nextInt();
 
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -151,27 +152,25 @@ public class Armazenamento {
         int linhasAfetadas = ps.executeUpdate();
         ps.close();
 
-        if(linhasAfetadas > 0) System.out.println("Paciente removido!");
+        if (linhasAfetadas > 0) System.out.println("Registro de armazenamento removido!");
         else System.out.println("ID não encontrado.");
-
     }
 
-    public static String menu(Scanner in){
+    public static String menu(Scanner in) {
         System.out.print(
-                "\nCRUD"+
-                        "\n1 - Listar armazenamento"+
-                        "\n2 - Inserir armazenamento"+
-                        "\n3 - Atualizar armazenamento"+
-                        "\n4 - Remover armazenamento"+
+                "\nCRUD ARMAZENAMENTO"+
+                        "\n1 - Listar itens"+
+                        "\n2 - Inserir item"+
+                        "\n3 - Atualizar itens"+
+                        "\n4 - Remover item"+
                         "\n0 - Sair"+
                         "\nOpção: "
         );
-        String resp = in.next();
-        return resp;
+        return in.next();
     }
 
-    public static boolean opcao(Connection conn,Scanner in, String op) throws SQLException{
-        switch (op){
+    public static boolean opcao(Connection conn, Scanner in, String op) throws SQLException {
+        switch (op) {
             case "1": read(conn); break;
             case "2": create(conn, in); break;
             case "3": update(conn, in); break;
@@ -186,18 +185,17 @@ public class Armazenamento {
         String url = "jdbc:postgresql://localhost:5432/Farmacia";
         try {
             Connection conn = DriverManager.getConnection(url, "postgres", "666");
-            System.out.println("Conexão com sucesso.");
+            System.out.println("Conexão efetuada com sucesso.");
 
             createTable(conn);
 
             Scanner in = new Scanner(System.in);
             boolean sair = false;
-            while(sair == false){
-                sair = opcao(conn,in, menu(in));
+            while (!sair) {
+                sair = opcao(conn, in, menu(in));
             }
-
-        }
-        catch (SQLException e){//caso dê erro, desvia pra cá
+            in.close();
+        } catch (SQLException e) {
             System.out.println("Erro ao conectar com o banco: " + e.getMessage());
         }
     }
