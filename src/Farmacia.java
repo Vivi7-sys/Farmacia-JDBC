@@ -5,15 +5,15 @@ public class Farmacia {
     public static void createTable(Connection conn) throws SQLException{
         String sql = "CREATE TABLE IF NOT EXISTS farmacia (" +
                 "id SERIAL PRIMARY KEY, "+
-                "nome_Farmacia VARCHAR(80) NOT NULL, "+ //muda
-                "localizacao VARCHAR(80) NOT NULL, "+  //muda
+                "nome_Farmacia VARCHAR(80) NOT NULL, "+
+                "localizacao VARCHAR(80) NOT NULL, "+
                 "horario_abrir INTEGER NOT NULL,"+
                 "horario_fechar INTEGER NOT NULL,"+
                 "dias_abertos VARCHAR(150) NOT NULL)";
 
         Statement stmt = conn.createStatement();
-        stmt.execute(sql); //Executa comando sql
-        stmt.close(); // fecha instrução
+        stmt.execute(sql);
+        stmt.close();
     }
 
     public static void create(Connection conn, Scanner in) throws SQLException{
@@ -28,7 +28,7 @@ public class Farmacia {
         System.out.println("Informe os dias que a farmácia será aberta: ");
         String dias_abertos = in.next();
 
-        String sql = "INSERT INTO farmacia (nome_Farmacia, localizacao, horario_abrir, horario_fechar, dias_abertos)"+"values (?, ?, ?, ?,?)";
+        String sql = "INSERT INTO farmacia (nome_Farmacia, localizacao, horario_abrir, horario_fechar, dias_abertos)" + " VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, Nome);
@@ -48,44 +48,42 @@ public class Farmacia {
         while (rs.next()){
             int id = rs.getInt("id");
             String nome = rs.getString("nome_farmacia");
-            String localizacao = rs.getString("Localização");
-            int horario_abrir = rs.getInt("Horário a ser aberto");
-            int horario_fechar = rs.getInt("Horário a ser fechado");
-            int dias_abertos = rs.getInt("Dias abertos");
+            String localizacao = rs.getString("localizacao");
+            int horario_abrir = rs.getInt("horario_abrir");
+            int horario_fechar = rs.getInt("horario_fechar");
+            String dias_abertos = rs.getString("dias_abertos");
 
             System.out.printf(
-                    "[%d] %s %s | Localizacao: %s | Horários fechados: %d | Horários abertos: %d | Dias: %s%n",
+                    "[%d] %s | Localizacao: %s | Horário abrir: %d | Horário fechar: %d | Dias: %s%n",
                     id, nome, localizacao, horario_abrir, horario_fechar, dias_abertos
             );
         }
-
+        rs.close();
+        stmt.close();
     }
 
     public static void update(Connection conn, Scanner in) throws SQLException{
-        String[] sql = new String[6];
-        String[] campos = new String[6];
-        boolean[] isInt = new boolean[6];
+        String[] sql = new String[5];
+        String[] campos = new String[5];
+        boolean[] isInt = new boolean[5];
 
-        sql[0] = "UPDATE farmacia SET id = ? WHERE id = ?";
-        sql[1] = "UPDATE farmacia SET nome_Farmacia = ? WHERE id = ?";
-        sql[2] = "UPDATE farmacia SET localizacao = ? WHERE id = ?";
-        sql[3] = "UPDATE farmacia SET horario_abrir = ? WHERE id = ?";
-        sql[4] = "UPDATE farmacia SET horario_fechar = ? WHERE id = ?";
-        sql[5] = "UPDATE farmacia SET dias_abertos = ? WHERE id = ?";
+        sql[0] = "UPDATE farmacia SET nome_Farmacia = ? WHERE id = ?";
+        sql[1] = "UPDATE farmacia SET localizacao = ? WHERE id = ?";
+        sql[2] = "UPDATE farmacia SET horario_abrir = ? WHERE id = ?";
+        sql[3] = "UPDATE farmacia SET horario_fechar = ? WHERE id = ?";
+        sql[4] = "UPDATE farmacia SET dias_abertos = ? WHERE id = ?";
 
-        campos[0] = "ID";
-        campos[1] = "Nome";
-        campos[2] = "Localização";
-        campos[3] = "Horários abertos";
-        campos[4] = "Horários fechados";
-        campos[5] = "Dias";
+        campos[0] = "Nome";
+        campos[1] = "Localização";
+        campos[2] = "Horários abertos";
+        campos[3] = "Horários fechados";
+        campos[4] = "Dias";
 
-        isInt[0] = true;
+        isInt[0] = false;
         isInt[1] = false;
-        isInt[2] = false;
+        isInt[2] = true;
         isInt[3] = true;
-        isInt[4] = true;
-        isInt[5] = false;
+        isInt[4] = false;
 
         System.out.print("Informe o ID da farmácia a ser atualizado: ");
         int id = in.nextInt();
@@ -178,9 +176,8 @@ public class Farmacia {
             }
 
         }
-        catch (SQLException e){//caso dê erro, desvia pra cá
+        catch (SQLException e){
             System.out.println("Erro ao conectar com o banco: " + e.getMessage());
         }
     }
-
 }
